@@ -16,12 +16,25 @@ data = r.json()['toptracks']['track']
 song_artist = ((i['name'], i['artist']['name']) for i in data)
 
 for s in song_artist:
-    print(s)
-
+    print(s[1])
 
 # get the Spotify song id for a given song.
 
-song = requests.get(
-    'https://api.spotify.com/v1/search?q=wednesday%20artist:drive%20by%20truckers&type=track')
+song_ids = []
 
-song = song.json()
+
+# def get_song_ids(song):
+# print(song)
+# song = requests.get(
+#     'https://api.spotify.com/v1/search?q={0}%20artist:{1}&type=track'.format(song.replace(' ', '%20'), artist.replace(' ', '%20')))
+
+# song = song.json()
+
+# return song['tracks']['items'][0]['id']
+
+
+# for s in song_artist:
+#     print(get_song_ids(s[0]))
+
+
+# print(song_ids)
