@@ -34,3 +34,43 @@ for s in song_artist:
 
 
 print(song_ids)
+
+# get current content of Top 25
+top_25_headers = {'Accept': 'application/json',
+                  'Authorization': 'Bearer {0}'.format(credentials.SPOTIFY_OAUTH_TOKEN)}
+
+
+tracks = requests.get(
+    'https://api.spotify.com/v1/users/mjkunc/playlists/2sQXVImsw9uZZKbmBKZxyZ/tracks', headers=top_25_headers)
+
+tracks = tracks.json()['items']
+
+top_25_ids = [i['track']['id'] for i in tracks]
+
+print(top_25_ids)
+
+# delete current songs from playlist
+remove_header = {'Accept': 'application/json',
+                 'Authorization': 'Bearer {0}'.format(credentials.SPOTIFY_OAUTH_TOKEN),
+                 'Content-Type': 'application/json', }
+
+
+# remove_data = '{"tracks": [{"positions": [0], "uri":"spotify:track:1sjQyogNaKg3DtsOADV1T2"}, {"positions": [1], "uri":"spotify:track:5uZLsGY9fknBd5Rxr7AIss"}]}'
+
+# for i, v in enumerate(top_25_ids):
+#     position_track_ids = []
+#     data_string = '{{"positions": {0}, "uri":"spotify:track:{1}}}'.format(
+#         i, v)
+#     print(data_string)
+
+data_string = ['{{"positions": {0}, "uri":"spotify:track:{1}}}'.format(
+    i, v) for i, v in enumerate(top_25_ids)]
+
+remove_data = '{{"tracks": [{0}]}}'.format(",".join(data_string))
+
+print(remove_data)
+
+r = requests.post('https://api.spotify.com/v1/users/mjkunc/playlists/2sQXVImsw9uZZKbmBKZxyZ/tracks',
+                  headers=remove_header, data=remove_data)
+
+print(r.status_code)
