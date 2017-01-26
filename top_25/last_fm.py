@@ -18,21 +18,21 @@ def last_fm_api_call(url, params):
 print(last_fm_api_call(last_fm.url, last_fm.params))
 # get the Spotify song id for a given song.
 
-# song_ids = []
+song_ids = []
 
 
-# def get_song_ids(song, artist):
-#     song = requests.get(
-#         'https://api.spotify.com/v1/search?q={0}%20artist:{1}&type=track'.format(song.replace(' ', '%20'), artist.replace(' ', '%20')))
+def get_song_ids(song, artist):
+    song = requests.get(
+        'https://api.spotify.com/v1/search?q={0}%20artist:{1}&type=track'.format(song.replace(' ', '%20'), artist.replace(' ', '%20')))
 
-#     return song.json()['tracks']['items'][0]['id']
-
-
-# for s in song_artist:
-#     song_ids.append(get_song_ids(s[0], s[1]))
+    return song.json()['tracks']['items'][0]['id']
 
 
-# print(song_ids)
+for s in last_fm_api_call(last_fm.url, last_fm.params):
+    song_ids.append(get_song_ids(s[0], s[1]))
+
+
+print(song_ids)
 
 # get current content of Top 25
 # top_25_headers = {'Accept': 'application/json',
