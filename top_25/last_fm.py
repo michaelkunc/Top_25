@@ -9,6 +9,10 @@ last_fm = Api(url='http://ws.audioscrobbler.com//2.0/', data=None, params={'api_
                                                                            'limit': '25', 'method': 'user.gettoptracks', 'user': 'teamkuntz'})
 
 
+def spotify_song_id_url(song, artist):
+    return 'https://api.spotify.com/v1/search?q={0}%20artist:{1}&type=track'.format(song.replace(' ', '%20'), artist.replace(' ', '%20'))
+
+
 def last_fm_api_call(url, params):
     r = requests.get(url, params=params)
     data = r.json()['toptracks']['track']
@@ -18,21 +22,16 @@ def last_fm_api_call(url, params):
 print(last_fm_api_call(last_fm.url, last_fm.params))
 # get the Spotify song id for a given song.
 
-song_ids = []
-
 
 def get_song_ids(song, artist):
-    song = requests.get(
-        'https://api.spotify.com/v1/search?q={0}%20artist:{1}&type=track'.format(song.replace(' ', '%20'), artist.replace(' ', '%20')))
-
+    song = requests.get(spotify_song_id_url(song, artist))
     return song.json()['tracks']['items'][0]['id']
 
 
-for s in last_fm_api_call(last_fm.url, last_fm.params):
-    song_ids.append(get_song_ids(s[0], s[1]))
-
-
-print(song_ids)
+spotify_song_ids = [get_song_ids(s[0], s[1])
+                    for s in last_fm_api_call(last_fm.url, last_fm.params)]
+print(spotify_song_ids)
+# print(song_ids)
 
 # get current content of Top 25
 # top_25_headers = {'Accept': 'application/json',
