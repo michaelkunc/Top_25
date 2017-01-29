@@ -1,7 +1,8 @@
 import credentials
 import requests
 import collections
-
+import boto3
+import botocore
 
 Api = collections.namedtuple('Api', 'url data params')
 
@@ -32,6 +33,34 @@ last_fm_songs = last_fm_api_call(last_fm.url, last_fm.params)
 spotify_song_ids = [(s[0], s[1], s[2], get_song_ids(s[1], s[2]))
                     for s in last_fm_songs]
 print(spotify_song_ids)
+
+
+# Writing out to S3
+# eventually will write out a file every week with a filename like
+# top_25_01_27_2017.txt
+test_file = 'the_s_is_for_sucks.txt'
+
+s3 = boto3.resource('s3')
+data = open(test_file, 'rb')
+
+bucket = s3.Bucket(credentials.AWS_S3_BUCKET_NAME)
+
+
+# will use something like this to see if a given file name is already in
+# the bucket.
+try:
+    s3.Object('lastfmtopsongs', 'the_s_is_for_sucks.txt').load()
+except botocore.exceptions.ClientError as e:
+    if e.response['Error']['Code'] == "404":
+        # exists = False
+        print('file is not there')
+    else:
+        raise
+else:
+    # exists = True
+    print('file is there')
+# s3.Bucket(bucket).put_object(Key=test_file, Body=data)
+
 
 # print(song_ids)
 
