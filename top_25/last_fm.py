@@ -43,24 +43,27 @@ test_file = 'the_s_is_for_sucks.txt'
 s3 = boto3.resource('s3')
 data = open(test_file, 'rb')
 
-bucket = s3.Bucket(credentials.AWS_S3_BUCKET_NAME)
+last_fm_bucket = s3.Bucket(credentials.AWS_S3_BUCKET_NAME)
 
 
 # will use something like this to see if a given file name is already in
 # the bucket.
-try:
-    s3.Object('lastfmtopsongs', 'the_s_is_for_sucks.txt').load()
-except botocore.exceptions.ClientError as e:
-    if e.response['Error']['Code'] == "404":
-        # exists = False
-        print('file is not there')
+def write_to_s3(bucket_object, file):
+    bucket_name = bucket_object.name
+    try:
+        s3.Object(bucket_name, file).load()
+    except botocore.exceptions.ClientError as e:
+        if e.response['Error']['Code'] == "404":
+            s3.Bucket(bucket_name).put_object(Key=file, Body=data)
+            return 'Your file is now saved on S3'
+        else:
+            raise
     else:
-        raise
-else:
-    # exists = True
-    print('file is there')
-# s3.Bucket(bucket).put_object(Key=test_file, Body=data)
+        return 'This file is already on s3'
 
+print(write_to_s3(last_fm_bucket, test_file))
+
+print(write_to_s3(last_fm_bucket, 'other_file.txt'))
 
 # print(song_ids)
 
